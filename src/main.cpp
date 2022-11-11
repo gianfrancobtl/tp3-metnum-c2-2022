@@ -1,59 +1,74 @@
 #include <Eigen/Sparse>
-#include <vector>
-#include <iostream>
 #include <Eigen/Dense>
+#include "jacobi.cpp"
+#include "gauss_seidel.cpp"
+#include <iostream>
 #include <tuple>
 #include <vector>
 #include <fstream>
 #include <cstring>
 #include <iomanip>
 #include <sys/time.h>
-//#include "jacobi.cpp"
+#include <random>
 
 using namespace std;
 
-using Eigen::DecompositionOptions;
 using Eigen::MatrixXd;
-using Eigen::SimplicialLLT;
-using Eigen::UpLoType;
 using Eigen::VectorXd;
 
-typedef Eigen::SparseMatrix<float> SpMat; // declares a column-major sparse matrix type of double
+typedef Eigen::SparseMatrix<double> SpMat;
 typedef Eigen::Triplet<float> T;
 
-// void buildProblem(std::vector<T> &coefficients, Eigen::VectorXd &b, int n);
-// void saveAsBitmap(const Eigen::VectorXd &x, int n, const char *filename);
-
-/**
-https://eigen.tuxfamily.org/dox/group__TutorialSparse.html
-**/
-
 SpMat generarMatrizDesdeArchivo(ifstream &);
+VectorXd generarVectorDesdeArchivo(ifstream &, int);
 void fillRandomVector(VectorXd v, int n);
 
-// El programa requiere 2 parametros: un archivo de entrada y un valor p.-
+// El programa requiere 3 parametros: dos archivos txt (una matriz y un vector) y la cantidad de repeticiones.-
 int main(int argc, char *argv[])
 {
-    int n;
+    int n, reps;
+    SpMat A;
+    VectorXd b;
+    pair<VectorXd, VectorXd> x_jacobi, x_gauss_seidel;
 
     cout << "Corriendo el programa..." << endl;
 
     // Argumentos : 0 - main - 1 archivo entrada
-    if (argc != 3)
+    if (argc != 4)
     {
         cout << "Error: faltan argumentos." << endl;
         return 1;
     }
 
     // Lee archivo entrada.-
-    ifstream archivoDeEntrada(argv[1]);
-    // int reps = argv[2];
+    ifstream matrizDeEntrada(argv[1]);
+    ifstream vectorDeEntrada(argv[2]);
+    reps = std::stoi(argv[3]);
 
-    SpMat A = generarMatrizDesdeArchivo(archivoDeEntrada);
+    A = generarMatrizDesdeArchivo(matrizDeEntrada);
     n = A.cols();
-    VectorXd x_ini;
+    b = generarVectorDesdeArchivo(vectorDeEntrada, n);
+    SpMat new_A = A.transpose() * A;
+
+    cout << A;
+    cout << new_A;
+    cout << b << endl;
+
+    VectorXd x_ini(n);
     fillRandomVector(x_ini, n);
-    // pair<VectorXd, VectorXd> x_jacobi = jacobi(A, b, reps, x_ini, x_direct);
+
+    x_jacobi = jacobi(A, A.transpose() * b, reps, x_ini, b);
+    x_gauss_seidel = gauss_seidel(A, A.transpose() * b, reps, x_ini, b);
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << x_jacobi.first[i] << "  " << x_gauss_seidel.first[i] << endl;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << x_jacobi.second[i] << "  " << x_gauss_seidel.second[i] << endl;
+    }
 
     // Fin de la ejecución
     return 0;
@@ -85,15 +100,34 @@ SpMat generarMatrizDesdeArchivo(ifstream &archivoDeEntrada)
     SpMat A(n, n);
     A.setFromTriplets(tl.begin(), tl.end());
 
-    // Trasponemos la matriz para que sea no singular.-
-    SpMat new_A = A.transpose() * A;
-    return new_A;
+    return A;
+}
+
+VectorXd generarVectorDesdeArchivo(ifstream &vectorDeEntrada, int n)
+{
+    double p;
+    double val;
+    vectorDeEntrada >> p;
+
+    VectorXd b(n);
+
+    if (vectorDeEntrada.is_open())
+    {
+        for (int i = 0; i < n; i++)
+        {
+            vectorDeEntrada >> val;
+
+            // Seteo del valor 1 a la posición [p2][p1]:
+            b[i] = val;
+        }
+    }
+    return b;
 }
 
 void fillRandomVector(VectorXd v, int n)
 {
     srand((unsigned)time(NULL));
-    double a = rand() % 100 + 1;
+    double a = rand() % 100;
     for (int i = 0; i < n; i++)
     {
         double b = rand() % 20 + 1;

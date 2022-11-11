@@ -5,17 +5,18 @@
 
 using namespace std;
 
-typedef Eigen::SparseMatrix<double> SpMat; // declares a column-major sparse matrix type of double
+typedef Eigen::SparseMatrix<double> SpMat;
 using Eigen::DecompositionOptions;
 using Eigen::SimplicialLLT;
 using Eigen::UpLoType;
 using Eigen::VectorXd;
 
-pair<VectorXd, VectorXd> jacobi(SpMat, VectorXd, int, VectorXd, VectorXd);
+// pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int &reps, VectorXd x_ini, VectorXd x_direct);
 
-pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
+pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
 {
-    SpMat D, L, U, TS, TI, T, D_inv;
+    // Declaración de variables:
+    SpMat TS, TI, D, L, U, DL, T, DL_inv;
     VectorXd c, xi;
 
     // Triangular superior e inferior de A.-
@@ -27,17 +28,19 @@ pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, V
     L = -TI + D;
     U = -TS + D;
 
-    // CALCULO DE LA INVERSA DE D.-
+    DL = D - L;
+
+    // CALCULO DE LA INVERSA DE D - L.-
     SimplicialLLT<SpMat> solver;
-    D.makeCompressed();
-    solver.compute(D);
+    DL.makeCompressed();
+    solver.compute(DL);
     SpMat I(A.cols(), A.cols());
     I.setIdentity();
-    D_inv = solver.solve(I);
+    DL_inv = solver.solve(I);
 
     // Calculo de la matriz de iteración T y de c:
-    T = D_inv * (L + U);
-    c = D_inv * b;
+    T = DL_inv * U;
+    c = DL_inv * b;
 
     xi = x_ini;
     VectorXd error(reps);
