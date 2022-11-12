@@ -12,6 +12,7 @@ using Eigen::UpLoType;
 using Eigen::VectorXd;
 
 pair<VectorXd, VectorXd> jacobi(SpMat, VectorXd, int, VectorXd, VectorXd);
+void normalizar(VectorXd, int);
 
 pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
 {
@@ -46,6 +47,20 @@ pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, V
         xi = T * xi + c;
         error[i] = (xi - x_direct).norm();
     }
+    normalizar(xi, A.cols());
 
     return make_pair(xi, error);
+}
+
+void normalizar(VectorXd x, int n)
+{
+    double sum = 0.00;
+    for (int i = 0; i < n; i++)
+    {
+        sum += x[i];
+    }
+    for (int j = 0; j < n; j++)
+    {
+        x[j] /= sum;
+    }
 }
