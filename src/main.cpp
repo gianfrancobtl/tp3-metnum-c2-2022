@@ -1,7 +1,6 @@
 #include <Eigen/Sparse>
 #include <Eigen/Dense>
-#include "jacobi.cpp"
-#include "gs.cpp"
+#include "iterative_methods.cpp"
 #include <iostream>
 #include <tuple>
 #include <vector>
