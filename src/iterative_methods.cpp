@@ -83,6 +83,34 @@ pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_
     return make_pair(xi, error);
 }
 
+/* GAUSS SEIDEL
+
+n = A.cols()
+xi = x_ini;
+VectorXd error(reps);
+for (int k = 0; k < reps; k++){
+    for (int i = 0; i < n; i++){
+        xi[i] = (1/A[i][i]) * ( b[i] - summation(A, xi, i, 1, i-1) - summation(A, xi, i, i+1, n) )
+        
+    }
+    error[k] = (xi - x_direct).norm();
+}
+normalizar(xi, A.cols());
+
+
+double summation (A, xi, i, low, sup){                   -> HAY Q DECLARARLA
+    double res = 0.00;
+    for (int j = low; j <= sup; j++){
+        res = res + (A[i][j] * x[j]);
+    }
+    return res;
+}
+
+
+*/
+
+
+
 pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
 {
     SpMat D, L, U, TS, TI, T, D_inv;
