@@ -16,7 +16,7 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
 typedef Eigen::SparseMatrix<double> SpMat;
-typedef Eigen::Triplet<float> T;
+typedef Eigen::Triplet<double> T;
 
 SpMat generarMatrizDesdeArchivo(ifstream &, double);
 VectorXd generarVectorDesdeArchivo(ifstream &, int);
@@ -55,24 +55,34 @@ int main(int argc, char *argv[])
     n = A.cols();
     x_direct = generarVectorDesdeArchivo(vectorDeEntrada, n);
     b = generarE(n);
+
     cout << A;
-    cout << b << endl;
 
     VectorXd x_ini(n);
     fillRandomVector(x_ini, n);
 
-    x_jacobi = jacobi(A, b, reps, x_ini, x_direct);
+    // x_jacobi = jacobi(A, b, reps, x_ini, x_direct);
     x_gauss_seidel = gauss_seidel(A, b, reps, x_ini, x_direct);
 
-    for (int i = 0; i < n; i++)
-    {
-        cout << x_jacobi.first[i] << "  " << x_gauss_seidel.first[i] << endl;
-    }
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << x_jacobi.first[i] << endl;
+    // }
 
     // for (int i = 0; i < reps; i++)
     // {
-    //     cout << x_jacobi.second[i] << "  " << x_gauss_seidel.second[i] << endl;
+    //     cout << x_jacobi.second[i] << endl;
     // }
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << x_gauss_seidel.first[i] << endl;
+    }
+
+    for (int i = 0; i < reps; i++)
+    {
+        cout << x_gauss_seidel.second[i] << endl;
+    }
 
     // Fin de la ejecución
     return 0;
@@ -84,7 +94,6 @@ SpMat generarMatrizDesdeArchivo(ifstream &archivoDeEntrada, double p)
     int n, k, p1, p2;
     archivoDeEntrada >> n;
     archivoDeEntrada >> k;
-    cout << "1" << endl;
 
     std::vector<T> tl;
     tl.reserve(k);
@@ -99,12 +108,10 @@ SpMat generarMatrizDesdeArchivo(ifstream &archivoDeEntrada, double p)
             tl.push_back(T(p2 - 1, p1 - 1, 1));
         }
     }
-    cout << "2" << endl;
 
     // Nueva instancia del resultado;
     // Se setean la matriz W y la cantidad total de links entre las páginas.
     SpMat W(n, n);
-    cout << "3" << endl;
 
     // Generación de los "ingredientes" de A:
     W.setFromTriplets(tl.begin(), tl.end());
@@ -113,12 +120,8 @@ SpMat generarMatrizDesdeArchivo(ifstream &archivoDeEntrada, double p)
     I.setIdentity();
     SpMat D = generarD(W, n);
 
-    // VectorXd e = generarE(n);
-    // VectorXd z = generarZ(W, n, p);
-
     // Generación de A:
     SpMat A = I - (p * W * D);
-    cout << "8" << endl;
 
     return A;
 }
@@ -200,9 +203,6 @@ VectorXd generarE(int n)
 VectorXd generarZ(SpMat W, int n, double p)
 {
     VectorXd z(n);
-    cout << n << endl;
-    cout << p << endl;
-    cout << W << endl;
 
     for (int j = 0; j < n; j++)
     {

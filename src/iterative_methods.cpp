@@ -3,8 +3,10 @@
 #include <Eigen/Sparse>
 #include <Eigen/Dense>
 #include "auxiliares.cpp"
+#include <Eigen/SparseLU>
 
 using namespace std;
+using namespace Eigen;
 
 typedef Eigen::SparseMatrix<double> SpMat;
 using Eigen::DecompositionOptions;
@@ -14,7 +16,6 @@ using Eigen::VectorXd;
 
 pair<VectorXd, VectorXd> gauss_seidel(SpMat, VectorXd, int, VectorXd, VectorXd);
 pair<VectorXd, VectorXd> jacobi(SpMat, VectorXd, int, VectorXd, VectorXd);
-
 void normalizar(VectorXd, int);
 
 pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
@@ -32,18 +33,39 @@ pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_
     L = -TI + D;
     U = -TS + D;
 
+    cout << "esta es la D!!!!!!" << endl;
+    cout << D << endl;
+
+    cout << "esta es la L!!!!!!" << endl;
+    cout << L << endl;
+
     DL = D - L;
 
+    cout << "esta es la DL!!!!!!" << endl;
+    cout << DL << endl;
+
     // CALCULO DE LA INVERSA DE D - L.-
-    SimplicialLLT<SpMat> solver;
-    DL.makeCompressed();
+    SparseLU<SpMat> solver;
+    // DL.makeCompressed();
     solver.compute(DL);
     SpMat I(A.cols(), A.cols());
-    I.setIdentity();
+    I.setIdentity(); // ok
     DL_inv = solver.solve(I);
 
+    if (solver.info() != Success)
+    {
+        cout << "Oh: Very bad" << endl;
+    }
+
+    cout << DL_inv << endl;
+    cout << U << endl;
+
+    cout << "" << endl;
     // Calculo de la matriz de iteración T y de c:
     T = DL_inv * U;
+    cout << T << endl;
+    cout << "" << endl;
+
     c = DL_inv * b;
 
     xi = x_ini;
@@ -51,6 +73,9 @@ pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_
     for (int i = 0; i < reps; i++)
     {
         xi = T * xi + c;
+        cout << xi << endl;
+        cout << "" << endl;
+
         error[i] = (xi - x_direct).norm();
     }
     normalizar(xi, A.cols());
@@ -82,6 +107,7 @@ pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, V
 
     // Calculo de la matriz de iteración T y de c:
     T = D_inv * (L + U);
+    cout << T << endl;
     c = D_inv * b;
 
     xi = x_ini;
