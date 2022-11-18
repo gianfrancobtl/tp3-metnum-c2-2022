@@ -20,7 +20,7 @@ typedef Eigen::Triplet<double> T;
 
 SpMat generarMatrizDesdeArchivo(ifstream &, double);
 VectorXd generarVectorDesdeArchivo(ifstream &, int);
-void fillRandomVector(VectorXd v, int n);
+VectorXd fillRandomVector(VectorXd v, int n);
 SpMat generarD(SpMat, int);
 VectorXd generarE(int);
 VectorXd generarZ(SpMat, int, double);
@@ -56,33 +56,31 @@ int main(int argc, char *argv[])
     x_direct = generarVectorDesdeArchivo(vectorDeEntrada, n);
     b = generarE(n);
 
-    cout << A;
-
     VectorXd x_ini(n);
-    fillRandomVector(x_ini, n);
+    x_ini = fillRandomVector(x_ini, n);
 
-    // x_jacobi = jacobi(A, b, reps, x_ini, x_direct);
+    x_jacobi = jacobi(A, b, reps, x_ini, x_direct);
+    
     x_gauss_seidel = gauss_seidel(A, b, reps, x_ini, x_direct);
+    
+    // JACOBI 
+    cout << x_jacobi.first << endl;
 
-    // for (int i = 0; i < n; i++)
-    // {
-    //     cout << x_jacobi.first[i] << endl;
-    // }
+    cout << "============================" << endl;
 
-    // for (int i = 0; i < reps; i++)
-    // {
-    //     cout << x_jacobi.second[i] << endl;
-    // }
+    // ERROR JACOBI
+    cout << x_jacobi.second << endl;
 
-    for (int i = 0; i < n; i++)
-    {
-        cout << x_gauss_seidel.first[i] << endl;
-    }
+    cout << "============================" << endl;
+    cout << "============================" << endl;
 
-    for (int i = 0; i < reps; i++)
-    {
-        cout << x_gauss_seidel.second[i] << endl;
-    }
+    // GAUSS SEIDEL
+    cout << x_gauss_seidel.first << endl;
+
+    cout << "============================" << endl;
+
+    // ERROR GAUSS SEIDEL
+    cout << x_gauss_seidel.second << endl;
 
     // Fin de la ejecución
     return 0;
@@ -146,7 +144,7 @@ VectorXd generarVectorDesdeArchivo(ifstream &vectorDeEntrada, int n)
     return b;
 }
 
-void fillRandomVector(VectorXd v, int n)
+VectorXd fillRandomVector(VectorXd v, int n)
 {
     srand((unsigned)time(NULL));
     for (int i = 0; i < n; i++)
@@ -154,6 +152,7 @@ void fillRandomVector(VectorXd v, int n)
         double b = rand() % 20 + 1;
         v[i] = b;
     }
+    return v;
 }
 
 SpMat generarD(SpMat W, int n)
@@ -170,7 +169,7 @@ SpMat generarD(SpMat W, int n)
         }
         else
         {
-            tl.push_back(T(j, j, (double)valor));
+            tl.push_back(T(j, j, 1.00 / (double)valor));
         }
     }
     D.setFromTriplets(tl.begin(), tl.end());
