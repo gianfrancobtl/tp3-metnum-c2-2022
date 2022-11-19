@@ -15,7 +15,6 @@ using namespace std;
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
-using Eigen::SparseLU;
 
 typedef Eigen::SparseMatrix<double> SpMat;
 typedef Eigen::Triplet<double> T;
@@ -57,6 +56,7 @@ int main(int argc, char *argv[])
     n = A.cols();
     x_direct = generarVectorDesdeArchivo(vectorDeEntrada, n);
     b = generarE(n);
+    b_2 = generarE(n);
     
 
     VectorXd x_ini(n);
@@ -66,17 +66,7 @@ int main(int argc, char *argv[])
     
     x_gauss_seidel = gauss_seidel(A, b, reps, x_ini, x_direct);
 
-
-
-    // ELIMINACION GAUSSIANA (OJO QUE PUEDEN CAMBIAR A y b)
-    SparseLU<SpMat, COLAMDOrdering<int> >   solver;
-    // Compute the ordering permutation vector from the structural pattern of A
-    solver.analyzePattern(A); 
-    // Compute the numerical factorization 
-    solver.factorize(A); 
-    x_eg = solver.solve(b);
-    x_eg = normalizar(x_eg, A.cols()); 
-
+    x_eg = eg(A, b_2);
     
     // JACOBI 
     cout << x_jacobi.first << endl;
@@ -84,10 +74,10 @@ int main(int argc, char *argv[])
     cout << "============================" << endl;
 
     // ERROR JACOBI
-    cout << x_jacobi.second << endl;
+    // cout << x_jacobi.second << endl;
 
-    cout << "============================" << endl;
-    cout << "============================" << endl;
+    // cout << "============================" << endl;
+    // cout << "============================" << endl;
 
     // GAUSS SEIDEL
     cout << x_gauss_seidel.first << endl;
@@ -95,10 +85,10 @@ int main(int argc, char *argv[])
     cout << "============================" << endl;
 
     // ERROR GAUSS SEIDEL
-    cout << x_gauss_seidel.second << endl;
+    //cout << x_gauss_seidel.second << endl;
 
-    cout << "============================" << endl;
-    cout << "============================" << endl;
+    // cout << "============================" << endl;
+    // cout << "============================" << endl;
 
     // ELIMINACION GAUSSIANA
     cout << x_eg << endl;
