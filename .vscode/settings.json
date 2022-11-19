@@ -75,7 +75,12 @@
     "unordered_map": "cpp",
     "unordered_set": "cpp",
     "valarray": "cpp",
-    "vector": "cpp"
+    "vector": "cpp",
+    "*.tcc": "cpp",
+    "clocale": "cpp",
+    "memory_resource": "cpp",
+    "hash_map": "cpp",
+    "cinttypes": "cpp"
   },
   "cmake.configureOnOpen": false
 }

@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include "auxiliares.cpp"
 #include <Eigen/SparseLU>
+#include <cmath>
 
 using namespace std;
 using namespace Eigen;
@@ -13,11 +14,14 @@ using Eigen::DecompositionOptions;
 using Eigen::SimplicialLLT;
 using Eigen::UpLoType;
 using Eigen::VectorXd;
+typedef Eigen::Triplet<double> T; // TINI
 
 double summation (SpMat, VectorXd, int, int, int);
 pair<VectorXd, VectorXd> gauss_seidel(SpMat, VectorXd, int, VectorXd, VectorXd);
 pair<VectorXd, VectorXd> jacobi(SpMat, VectorXd, int, VectorXd, VectorXd);
 VectorXd normalizar(VectorXd, int);
+bool sonIguales(double a, double b);
+VectorXd eg(SpMat A, VectorXd b);
 
 
 pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
