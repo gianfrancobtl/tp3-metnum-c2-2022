@@ -58,14 +58,22 @@ int main(int argc, char *argv[])
     // Generamos un vector aleatorio inicial para los métodos iterativos:
     VectorXd x_ini = fillRandomVector(A.cols());
 
+    // SOLUCION LIBRERIA PARA TESTEAR TIEMPOS
+    SparseLU<SpMat, COLAMDOrdering<int> > solver;
+    solver.analyzePattern(A);
+    solver.factorize(A);
+    x_direct = solver.solve(b);
+    x_direct = normalizar(x_eg, A.cols());
+    
+
     // ELIMINACION GAUSSIANA
-    x_direct = eg(A, b);
+    // x_direct = eg(A, b);
     cout << "Resultado directo por eliminación gaussiana" << endl;
     cout << x_direct << endl;
 
     cout << "============================" << endl;
 
-    // JACOBI
+    // // JACOBI
     x_jacobi = jacobi(A, b, reps, x_ini, x_direct);
     cout << "Resultado de Jacobi" << endl;
     cout << x_jacobi.first << endl;
@@ -77,11 +85,11 @@ int main(int argc, char *argv[])
     cout << "Resultado de Gauss Seidel" << endl;
     cout << x_gauss_seidel.first << endl;
 
-    // ERROR JACOBI
-    // cout << x_jacobi.second << endl;
+    //ERROR JACOBI
+    //cout << x_jacobi.second << endl;
 
-    // ERROR GAUSS SEIDEL
-    // cout << x_gauss_seidel.second << endl;
+    //ERROR GAUSS SEIDEL
+    //cout << x_gauss_seidel.second << endl;
 
     // Fin de la ejecución
     return 0;

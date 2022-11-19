@@ -108,15 +108,17 @@ VectorXd eg(SpMat A, VectorXd b)
             b[fila] = b[fila] - (b[pivot] * valor_pivot);
 
             // Se actualizan todos los valores de la fila con el valor_pivot
-            for (int columna = pivot; columna < n; columna++)
+           for (int columna = pivot; columna < n; columna++)
             {
-
-                double valor_fila_columna = A.coeff(fila, columna) - (double)(A.coeff(pivot, columna) * valor_pivot);
-                A.coeffRef(fila, columna) = valor_fila_columna;
+                double val_2 = A.coeff(pivot, columna) * valor_pivot;
+                if (!sonIguales(val_2, 0.00)){
+                    //double val = A.coeff(fila,columna);
+                    A.coeffRef(fila, columna) -= val_2;
+                }
             }
         }
     }
-    cout << A << endl;
+    //cout << A << endl;
 
     // Resolución del sistema triangular Ar = b
     VectorXd result(n);
