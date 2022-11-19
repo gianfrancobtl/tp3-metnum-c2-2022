@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <sys/time.h>
 #include <random>
-#include<Eigen/SparseLU>
+#include <Eigen/SparseLU>
 
 using namespace std;
 
@@ -20,14 +20,12 @@ typedef Eigen::SparseMatrix<double> SpMat;
 typedef Eigen::Triplet<double> T;
 
 SpMat generarMatrizDesdeArchivo(ifstream &, double);
-VectorXd generarVectorDesdeArchivo(ifstream &, int);
-VectorXd fillRandomVector(VectorXd v, int n);
+VectorXd fillRandomVector(int);
 SpMat generarD(SpMat, int);
 VectorXd generarE(int);
-VectorXd generarZ(SpMat, int, double);
 double calcularGrado(SpMat, double);
 
-// El programa requiere 3 parametros: dos archivos txt (una matriz y un vector) y la cantidad de repeticiones.-
+// El programa requiere 2 parametros: un archivo txt y la cantidad de repeticiones.-
 int main(int argc, char *argv[])
 {
     int n, reps;
@@ -38,63 +36,52 @@ int main(int argc, char *argv[])
     cout << "Corriendo el programa..." << endl;
 
     // Argumentos : 0 - main - 1 archivo entrada
-    if (argc != 4)
+    if (argc != 3)
     {
         cout << "Error: faltan argumentos." << endl;
         return 1;
     }
 
-    // Lee archivo entrada.-
+    // Lee archivo entrada:
     ifstream matrizDeEntrada(argv[1]);
-    ifstream vectorDeEntrada(argv[2]);
-    reps = std::stoi(argv[3]);
+    reps = std::stoi(argv[2]);
 
-    double p;
-    vectorDeEntrada >> p;
+    // Seteamos un p por defecto de 0.75:
+    double p = 0.75;
 
+    // Generamos la matriz A:
     A = generarMatrizDesdeArchivo(matrizDeEntrada, p);
-    n = A.cols();
-    x_direct = generarVectorDesdeArchivo(vectorDeEntrada, n);
-    b = generarE(n);
-    b_2 = generarE(n);
-    
 
-    VectorXd x_ini(n);
-    x_ini = fillRandomVector(x_ini, n);
+    // Generamos el vector b (lleno de unos):
+    b = generarE(A.cols());
 
+    // Generamos un vector aleatorio inicial para los métodos iterativos:
+    VectorXd x_ini = fillRandomVector(A.cols());
+
+    // ELIMINACION GAUSSIANA
+    x_direct = eg(A, b);
+    cout << "Resultado directo por eliminación gaussiana" << endl;
+    cout << x_direct << endl;
+
+    cout << "============================" << endl;
+
+    // JACOBI
     x_jacobi = jacobi(A, b, reps, x_ini, x_direct);
-    
-    x_gauss_seidel = gauss_seidel(A, b, reps, x_ini, x_direct);
-
-    x_eg = eg(A, b_2);
-    
-    // JACOBI 
+    cout << "Resultado de Jacobi" << endl;
     cout << x_jacobi.first << endl;
 
     cout << "============================" << endl;
 
+    // GAUSS SEIDEL
+    x_gauss_seidel = gauss_seidel(A, b, reps, x_ini, x_direct);
+    cout << "Resultado de Gauss Seidel" << endl;
+    cout << x_gauss_seidel.first << endl;
+
     // ERROR JACOBI
     // cout << x_jacobi.second << endl;
 
-    // cout << "============================" << endl;
-    // cout << "============================" << endl;
-
-    // GAUSS SEIDEL
-    cout << x_gauss_seidel.first << endl;
-
-    cout << "============================" << endl;
-
     // ERROR GAUSS SEIDEL
-    //cout << x_gauss_seidel.second << endl;
-
-    // cout << "============================" << endl;
-    // cout << "============================" << endl;
-
-    // ELIMINACION GAUSSIANA
-    cout << x_eg << endl;
-
-    cout << "============================" << endl;
-
+    // cout << x_gauss_seidel.second << endl;
 
     // Fin de la ejecución
     return 0;
@@ -138,28 +125,9 @@ SpMat generarMatrizDesdeArchivo(ifstream &archivoDeEntrada, double p)
     return A;
 }
 
-VectorXd generarVectorDesdeArchivo(ifstream &vectorDeEntrada, int n)
+VectorXd fillRandomVector(int n)
 {
-    double val;
-
-    VectorXd b(n);
-
-    if (vectorDeEntrada.is_open())
-    {
-        for (int i = 0; i < n; i++)
-        {
-            vectorDeEntrada >> val;
-
-            // Seteo del valor 1 a la posición [p2][p1]:
-            b[i] = val;
-        }
-    }
-
-    return b;
-}
-
-VectorXd fillRandomVector(VectorXd v, int n)
-{
+    VectorXd v(n);
     srand((unsigned)time(NULL));
     for (int i = 0; i < n; i++)
     {
@@ -211,23 +179,4 @@ VectorXd generarE(int n)
     }
 
     return e;
-}
-
-VectorXd generarZ(SpMat W, int n, double p)
-{
-    VectorXd z(n);
-
-    for (int j = 0; j < n; j++)
-    {
-        double valor = calcularGrado(W, j);
-        if (valor == 0)
-        {
-            z[j] = 1 / n;
-        }
-        else
-        {
-            z[j] = (1 - p) / n;
-        }
-    }
-    return z;
 }

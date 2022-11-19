@@ -16,13 +16,12 @@ using Eigen::UpLoType;
 using Eigen::VectorXd;
 typedef Eigen::Triplet<double> T; // TINI
 
-double summation (SpMat, VectorXd, int, int, int);
+double summation(SpMat, VectorXd, int, int, int);
 pair<VectorXd, VectorXd> gauss_seidel(SpMat, VectorXd, int, VectorXd, VectorXd);
 pair<VectorXd, VectorXd> jacobi(SpMat, VectorXd, int, VectorXd, VectorXd);
 VectorXd normalizar(VectorXd, int);
 bool sonIguales(double a, double b);
 VectorXd eg(SpMat A, VectorXd b);
-
 
 pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
 {
@@ -33,21 +32,20 @@ pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_
     int n = A.cols();
     xi = x_ini;
     VectorXd error(reps);
-    
-    for (int k = 0; k < reps; k++){
-        for (int i = 0; i < n; i++){
-            xi[i] = (1/A.coeff(i, i)) * ( b[i] - summation(A, xi, i, 0, i-1) - summation(A, xi, i, i+1, n-1) );
+
+    for (int k = 0; k < reps; k++)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            xi[i] = (1 / A.coeff(i, i)) * (b[i] - summation(A, xi, i, 0, i - 1) - summation(A, xi, i, i + 1, n - 1));
         }
         error[k] = (xi - x_direct).norm();
     }
-    
+
     xi = normalizar(xi, A.cols());
 
     return make_pair(xi, error);
 }
-
-
-
 
 pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
 {
@@ -87,7 +85,6 @@ pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, V
     return make_pair(xi, error);
 }
 
-
 // ELIMINACION GAUSSIANA
 
 bool sonIguales(double a, double b)
@@ -98,9 +95,9 @@ bool sonIguales(double a, double b)
 VectorXd eg(SpMat A, VectorXd b)
 {
     int n = A.cols();
-    
+
     for (int pivot = 0; pivot < n - 1; pivot++)
-    {  
+    {
         for (int fila = pivot + 1; fila < n; fila++)
 
         {
@@ -109,7 +106,7 @@ VectorXd eg(SpMat A, VectorXd b)
             double valor_pivot = A.coeff(fila, pivot) / A.coeff(pivot, pivot);
 
             b[fila] = b[fila] - (b[pivot] * valor_pivot);
-            
+
             // Se actualizan todos los valores de la fila con el valor_pivot
             for (int columna = pivot; columna < n; columna++)
             {
@@ -117,10 +114,10 @@ VectorXd eg(SpMat A, VectorXd b)
                 double valor_fila_columna = A.coeff(fila, columna) - (double)(A.coeff(pivot, columna) * valor_pivot);
                 A.coeffRef(fila, columna) = valor_fila_columna;
             }
-        } 
+        }
     }
     cout << A << endl;
-    
+
     // Resolución del sistema triangular Ar = b
     VectorXd result(n);
 
@@ -138,12 +135,6 @@ VectorXd eg(SpMat A, VectorXd b)
 
     return result;
 }
-
-
-
-
-
-
 
 /* Funcion vieja gauss seidel
 
@@ -195,9 +186,3 @@ pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_
     return make_pair(xi, error);
 }
 */
-
-
-
-
-
-
