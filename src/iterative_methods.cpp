@@ -107,10 +107,11 @@ VectorXd eg(SpMat A, VectorXd b)
             b[fila] = b[fila] - (b[pivot] * valor_pivot);
 
             // Se actualizan todos los valores de la fila con el valor_pivot
-           for (int columna = pivot; columna < n; columna++) // Este ciclo tarda mucho
+            for (int columna = pivot; columna < n; columna++) // Este ciclo tarda mucho
             {
                 double val_2 = A.coeff(pivot, columna) * valor_pivot;
-                if (!sonIguales(val_2, 0.00)){
+                if (!sonIguales(val_2, 0.00))
+                {
                     A.coeffRef(fila, columna) -= val_2;
                 }
             }
@@ -135,7 +136,8 @@ VectorXd eg(SpMat A, VectorXd b)
     return result;
 }
 
-/* Funcion vieja gauss seidel
+/*
+Funcion de Gauss Seidel que también funciona (implementación vieja).-
 
 pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
 {
