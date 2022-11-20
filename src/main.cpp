@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 {
     int n, reps;
     SpMat A;
-    VectorXd b, b_2, x_direct, x_eg;
+    VectorXd b, x_direct, x_eg;
     pair<VectorXd, VectorXd> x_jacobi, x_gauss_seidel;
 
     cout << "Corriendo el programa..." << endl;
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     solver.analyzePattern(A);
     solver.factorize(A);
     x_direct = solver.solve(b);
-    x_direct = normalizar(x_eg, A.cols());
+    x_direct = normalizar(x_direct, A.cols());
     
 
     // ELIMINACION GAUSSIANA
