@@ -98,27 +98,24 @@ VectorXd eg(SpMat A, VectorXd b)
 
     for (int pivot = 0; pivot < n - 1; pivot++)
     {
+        double coeff_pivot = A.coeff(pivot, pivot);
         for (int fila = pivot + 1; fila < n; fila++)
-
         {
-
             // valor del pivot: (valor a "anular") / a_(pivot)
-            double valor_pivot = A.coeff(fila, pivot) / A.coeff(pivot, pivot);
+            double valor_pivot = A.coeff(fila, pivot) / coeff_pivot;
 
             b[fila] = b[fila] - (b[pivot] * valor_pivot);
 
             // Se actualizan todos los valores de la fila con el valor_pivot
-           for (int columna = pivot; columna < n; columna++)
+           for (int columna = pivot; columna < n; columna++) // Este ciclo tarda mucho
             {
                 double val_2 = A.coeff(pivot, columna) * valor_pivot;
                 if (!sonIguales(val_2, 0.00)){
-                    //double val = A.coeff(fila,columna);
                     A.coeffRef(fila, columna) -= val_2;
                 }
             }
         }
     }
-    //cout << A << endl;
 
     // Resolución del sistema triangular Ar = b
     VectorXd result(n);

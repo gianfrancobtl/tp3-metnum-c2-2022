@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
     // ELIMINACION GAUSSIANA
     // x_direct = eg(A, b);
-    cout << "Resultado directo por eliminación gaussiana" << endl;
+    // cout << "Resultado directo por eliminación gaussiana" << endl;
     cout << x_direct << endl;
 
     cout << "============================" << endl;
