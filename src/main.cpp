@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     // Inicializacion de otras variables:
     int n, reps;
     SpMat A;
-    VectorXd b, x_direct, x_eg;
+    VectorXd b, x_direct, x_eg, tiempos(5);
     pair<VectorXd, VectorXd> x_jacobi, x_gauss_seidel;
     cout << "Corriendo el programa..." << endl;
 
@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
     Gauss_c += argv[1];
     string GaussSeidel_c = Gauss_c + "_GaussSeidel.out";
     string Jacobi_c = Gauss_c + "_Jacobi.out";
-    string GaussSeidel_error_c = Gauss_c + "_Jacobi_error.out";
-    string Jacobi_error_c = Gauss_c + "_GaussSeidel_Error.out";
+    string GaussSeidel_error_c = Gauss_c + "_GaussSeidel_error.out";
+    string Jacobi_error_c = Gauss_c + "_Jacobi_error.out";
     Gauss_c += "_Gauss.out";
 
     double timeCreation = 0.00;
@@ -111,11 +111,15 @@ int main(int argc, char *argv[])
         elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
         elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
         timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
+        tiempos[iteraciones] = timeGauss;
         totalTiempos += timeGauss;
     }
 
     Gauss.open(Gauss_c);
     Gauss << totalTiempos / 5 << endl;
+    for (int i = 0; i < 5; i ++){
+        Gauss << tiempos[i] << endl;
+    }
     Gauss << x_direct << endl;
     Gauss.close();
 
@@ -130,10 +134,14 @@ int main(int argc, char *argv[])
         elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
         elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
         timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
+        tiempos[iteraciones] = timeGauss;        
         totalTiempos += timeGauss;
     }
     Jacobi.open(Jacobi_c);
     Jacobi << totalTiempos / 5 + timeCreation << endl;
+    for (int i = 0; i < 5; i ++){
+        Jacobi << tiempos[i] << endl;
+    }
     Jacobi << x_jacobi.first << endl;
     Jacobi.close();
 
@@ -152,30 +160,35 @@ int main(int argc, char *argv[])
         elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
         elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
         timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
+        tiempos[iteraciones] = timeGauss;
         totalTiempos += timeGauss;
     }
     GaussSeidel.open(GaussSeidel_c);
     GaussSeidel << totalTiempos / 5 + timeCreation << endl;
+    for (int i = 0; i < 5; i ++){
+        GaussSeidel << tiempos[i] << endl;
+    }
     GaussSeidel << x_gauss_seidel.first << endl;
     GaussSeidel.close();
-
+    
     GaussSeidel_error.open(GaussSeidel_error_c);
     GaussSeidel_error << x_gauss_seidel.second << endl;
     GaussSeidel_error.close();
 
     // IMPRESION DE RESULTADOS POR CONSOLA:
-    cout << "Resultado directo por eliminación gaussiana:" << endl;
-    cout << x_direct << endl;
-    cout << "============================" << endl;
-    cout << "Resultado de Jacobi:" << endl;
-    cout << x_jacobi.first << endl;
-    cout << "============================" << endl;
-    cout << "Resultado de Gauss Seidel:" << endl;
-    cout << x_gauss_seidel.first << endl;
+    // cout << "Resultado directo por eliminación gaussiana:" << endl;
+    // cout << x_direct << endl;
+    // cout << "============================" << endl;
+    // cout << "Resultado de Jacobi:" << endl;
+    // cout << x_jacobi.first << endl;
+    // cout << "============================" << endl;
+    // cout << "Resultado de Gauss Seidel:" << endl;
+    // cout << x_gauss_seidel.first << endl;
 
     //  Fin de la ejecución
     return 0;
 }
+
 SpMat generarMatrizDesdeArchivo(ifstream &archivoDeEntrada, double p)
 {
     // Variables n (cantidad de páginas) - k (cantidad de links) - p1 (pagina 1) - p2 (pagina 2).-
@@ -206,6 +219,7 @@ SpMat generarMatrizDesdeArchivo(ifstream &archivoDeEntrada, double p)
     SpMat A = I - (p * W * D);
     return A;
 }
+
 VectorXd fillRandomVector(int n)
 {
     VectorXd v(n);
@@ -217,6 +231,7 @@ VectorXd fillRandomVector(int n)
     }
     return v;
 }
+
 SpMat generarD(SpMat W, int n)
 {
     SpMat D(n, n);
@@ -237,6 +252,7 @@ SpMat generarD(SpMat W, int n)
     D.setFromTriplets(tl.begin(), tl.end());
     return D;
 }
+
 double calcularGrado(SpMat W, double j)
 {
     double res = 0.00;
@@ -246,6 +262,7 @@ double calcularGrado(SpMat W, double j)
     }
     return res;
 }
+
 VectorXd generarE(int n)
 {
     VectorXd e(n);

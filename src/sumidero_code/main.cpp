@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
     archivoSalida.precision(10);
 
     // Seteo los nombres de los archivos a guardar.-
-    string archivoSalida_c = "../../tests/sumidero_";
+    string archivoSalida_c = "../../tests/test_sumidero_";
     archivoSalida_c += argv[1];
-    archivoSalida_c += "_nodos.out";
+    archivoSalida_c += "_nodos.txt";
 
     archivoSalida.open(archivoSalida_c);
     archivoSalida << n << endl;
