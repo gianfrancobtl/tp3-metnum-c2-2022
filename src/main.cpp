@@ -111,12 +111,12 @@ int main(int argc, char *argv[])
         elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
         elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
         timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
-        tiempos[iteraciones] = timeGauss;
+        tiempos[iteraciones] = timeGauss + timeCreation;
         totalTiempos += timeGauss;
     }
 
     Gauss.open(Gauss_c);
-    Gauss << totalTiempos / 5 << endl;
+    Gauss << totalTiempos / 5 + timeCreation << endl;
     for (int i = 0; i < 5; i ++){
         Gauss << tiempos[i] << endl;
     }
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
         elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
         elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
         timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
-        tiempos[iteraciones] = timeGauss;        
+        tiempos[iteraciones] = timeGauss + timeCreation;        
         totalTiempos += timeGauss;
     }
     Jacobi.open(Jacobi_c);
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
         elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
         elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
         timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
-        tiempos[iteraciones] = timeGauss;
+        tiempos[iteraciones] = timeGauss  + timeCreation;
         totalTiempos += timeGauss;
     }
     GaussSeidel.open(GaussSeidel_c);
