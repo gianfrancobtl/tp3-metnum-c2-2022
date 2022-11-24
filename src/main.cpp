@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     ofstream Jacobi;
     ofstream GaussSeidel_error;
     ofstream Jacobi_error;
+    ofstream NuestroGauss;
 
     // Seteo tipo de salida:
     Gauss.setf(ios::fixed, ios::floatfield);
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
     Jacobi.setf(ios::fixed, ios::floatfield);
     GaussSeidel_error.setf(ios::fixed, ios::floatfield);
     Jacobi_error.setf(ios::fixed, ios::floatfield);
+    NuestroGauss.setf(ios::fixed, ios::floatfield);
 
     // Seteo cantidad de decimales (10).-
     Gauss.precision(10);
@@ -71,6 +73,7 @@ int main(int argc, char *argv[])
     Jacobi.precision(10);
     GaussSeidel_error.precision(10);
     Jacobi_error.precision(10);
+    NuestroGauss.precision(10);
 
     // Seteo los nombres de los archivos a guardar.-
     string Gauss_c = "./";
@@ -79,6 +82,7 @@ int main(int argc, char *argv[])
     string Jacobi_c = Gauss_c + "_Jacobi.out";
     string GaussSeidel_error_c = Gauss_c + "_GaussSeidel_error.out";
     string Jacobi_error_c = Gauss_c + "_Jacobi_error.out";
+    string NuestroGauss_c = Gauss_c + "_NuestroGauss.out";
     Gauss_c += "_Gauss.out";
 
     double timeCreation = 0.00;
@@ -122,6 +126,31 @@ int main(int argc, char *argv[])
     }
     Gauss << x_direct << endl;
     Gauss.close();
+
+    // NUESTRO GAUSS
+    totalTiempos = 0.00;
+    for (int iteraciones = 0; iteraciones < 5; iteraciones++)
+    {
+        timeGauss = 0.00;
+        gettimeofday(&startGauss, NULL);
+
+        x_eg = eg(A, b);
+
+        gettimeofday(&endGauss, NULL);
+        elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
+        elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
+        timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
+        tiempos[iteraciones] = timeGauss + timeCreation;
+        totalTiempos += timeGauss;
+    }
+
+    NuestroGauss.open(NuestroGauss_c);
+    NuestroGauss << totalTiempos / 5 + timeCreation << endl;
+    for (int i = 0; i < 5; i ++){
+        NuestroGauss << tiempos[i] << endl;
+    }
+    NuestroGauss << x_eg << endl;
+    NuestroGauss.close();
 
     // JACOBI:
     totalTiempos = 0.00;

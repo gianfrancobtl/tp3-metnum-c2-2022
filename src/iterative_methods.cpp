@@ -98,6 +98,7 @@ VectorXd eg(SpMat A, VectorXd b)
 
     for (int pivot = 0; pivot < n - 1; pivot++)
     {
+        cout << "PIVOT: " << pivot << endl;
         double coeff_pivot = A.coeff(pivot, pivot);
         for (int fila = pivot + 1; fila < n; fila++)
         {

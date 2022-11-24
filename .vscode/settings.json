@@ -80,7 +80,10 @@
     "clocale": "cpp",
     "memory_resource": "cpp",
     "hash_map": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "*.expression": "cpp",
+    "alignedvector3": "cpp",
+    "fft": "cpp"
   },
   "cmake.configureOnOpen": false
 }
