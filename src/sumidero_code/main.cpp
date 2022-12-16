@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     // Seteo los nombres de los archivos a guardar.-
     string archivoSalida_c = "../../tests/test_sumidero_";
     archivoSalida_c += argv[1];
-    archivoSalida_c += "nodos";
+    archivoSalida_c += "_nodos_";
     archivoSalida_c += argv[2];
     archivoSalida_c += "_conex.txt";
 

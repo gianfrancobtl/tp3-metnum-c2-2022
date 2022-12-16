@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
     elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
     timeCreation += ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
-
+    cout << '1' << endl;
     // ELIMINACION GAUSSIANA (X_DIRECT):
     totalTiempos = 0.00;
     for (int iteraciones = 0; iteraciones < 5; iteraciones++)
@@ -127,30 +127,31 @@ int main(int argc, char *argv[])
     Gauss << x_direct << endl;
     Gauss.close();
 
-    // NUESTRO GAUSS
-    totalTiempos = 0.00;
-    for (int iteraciones = 0; iteraciones < 5; iteraciones++)
-    {
-        timeGauss = 0.00;
-        gettimeofday(&startGauss, NULL);
+    // // NUESTRO GAUSS
+    // totalTiempos = 0.00;
+    // for (int iteraciones = 0; iteraciones < 5; iteraciones++)
+    // {
+    //     timeGauss = 0.00;
+    //     gettimeofday(&startGauss, NULL);
 
-        x_eg = eg(A, b);
+    //     x_eg = eg(A, b);
 
-        gettimeofday(&endGauss, NULL);
-        elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
-        elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
-        timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
-        tiempos[iteraciones] = timeGauss + timeCreation;
-        totalTiempos += timeGauss;
-    }
+    //     gettimeofday(&endGauss, NULL);
+    //     elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
+    //     elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
+    //     timeGauss = timeCreation + ((elapsed_seconds)*1000 + elapsed_useconds / 1000.0);
+    //     tiempos[iteraciones] = timeGauss + timeCreation;
+    //     totalTiempos += timeGauss;
+    // }
 
-    NuestroGauss.open(NuestroGauss_c);
-    NuestroGauss << totalTiempos / 5 + timeCreation << endl;
-    for (int i = 0; i < 5; i ++){
-        NuestroGauss << tiempos[i] << endl;
-    }
-    NuestroGauss << x_eg << endl;
-    NuestroGauss.close();
+    // NuestroGauss.open(NuestroGauss_c);
+    // NuestroGauss << totalTiempos / 5 + timeCreation << endl;
+    // for (int i = 0; i < 5; i ++){
+    //     NuestroGauss << tiempos[i] << endl;
+    // }
+    // NuestroGauss << x_eg << endl;
+    // NuestroGauss.close();
+    cout << '2' << endl;
 
     // JACOBI:
     totalTiempos = 0.00;
@@ -158,7 +159,7 @@ int main(int argc, char *argv[])
     {
         timeGauss = 0.00;
         gettimeofday(&startGauss, NULL);
-        x_jacobi = jacobi(A, b, reps, x_ini, x_direct);
+        x_jacobi = jacobi(A, b, reps, x_ini, x_direct, 0.0000001);
         gettimeofday(&endGauss, NULL);
         elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
         elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;
@@ -177,6 +178,8 @@ int main(int argc, char *argv[])
     Jacobi_error.open(Jacobi_error_c);
     Jacobi_error << x_jacobi.second << endl;
     Jacobi_error.close();
+    
+    cout << '3' << endl;
 
     // GAUSS SEIDEL:
     totalTiempos = 0.00;
@@ -184,7 +187,7 @@ int main(int argc, char *argv[])
     {
         timeGauss = 0.00;
         gettimeofday(&startGauss, NULL);
-        x_gauss_seidel = gauss_seidel(A, b, reps, x_ini, x_direct);
+        x_gauss_seidel = gauss_seidel(A, b, reps, x_ini, x_direct, 0.0000001);
         gettimeofday(&endGauss, NULL);
         elapsed_seconds = endGauss.tv_sec - startGauss.tv_sec;
         elapsed_useconds = endGauss.tv_usec - startGauss.tv_usec;

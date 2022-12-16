@@ -17,13 +17,13 @@ using Eigen::VectorXd;
 typedef Eigen::Triplet<double> T; // TINI
 
 double summation(SpMat, VectorXd, int, int, int);
-pair<VectorXd, VectorXd> gauss_seidel(SpMat, VectorXd, int, VectorXd, VectorXd);
-pair<VectorXd, VectorXd> jacobi(SpMat, VectorXd, int, VectorXd, VectorXd);
+pair<VectorXd, VectorXd> gauss_seidel(SpMat, VectorXd, int, VectorXd, VectorXd, double);
+pair<VectorXd, VectorXd> jacobi(SpMat, VectorXd, int, VectorXd, VectorXd, double);
 VectorXd normalizar(VectorXd, int);
 bool sonIguales(double a, double b);
 VectorXd eg(SpMat A, VectorXd b);
 
-pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
+pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct, double eps)
 {
     // Declaración de variables:
     SpMat TS, TI, D, L, U, DL, T, DL_inv;
@@ -32,6 +32,7 @@ pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_
     int n = A.cols();
     xi = x_ini;
     VectorXd error(reps);
+    double err = 1;
 
     for (int k = 0; k < reps; k++)
     {
@@ -40,6 +41,10 @@ pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_
             xi[i] = (1 / A.coeff(i, i)) * (b[i] - summation(A, xi, i, 0, i - 1) - summation(A, xi, i, i + 1, n - 1));
         }
         error[k] = (normalizar(xi, A.cols()) - x_direct).norm();
+        err = error[k];
+        if (err <= eps){
+            k = reps;
+        }
     }
 
     xi = normalizar(xi, A.cols());
@@ -47,7 +52,7 @@ pair<VectorXd, VectorXd> gauss_seidel(SpMat A, VectorXd b, int reps, VectorXd x_
     return make_pair(xi, error);
 }
 
-pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct)
+pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, VectorXd x_direct, double eps)
 {
     SpMat D, L, U, TS, TI, T, D_inv;
     VectorXd c, xi;
@@ -75,10 +80,16 @@ pair<VectorXd, VectorXd> jacobi(SpMat A, VectorXd b, int reps, VectorXd x_ini, V
 
     xi = x_ini;
     VectorXd error(reps);
+    double err = 1;
+
     for (int i = 0; i < reps; i++)
     {
         xi = T * xi + c;
         error[i] = (normalizar(xi, A.cols()) - x_direct).norm();
+        err = error[i];
+        if (err <= eps){
+            i = reps;
+        }
     }
     xi = normalizar(xi, A.cols());
 
@@ -96,10 +107,34 @@ VectorXd eg(SpMat A, VectorXd b)
 {
     int n = A.cols();
 
+    // for (int pivot = 0; pivot < n - 1; pivot++){
+    //     cout << "A.outerSize() " << A.outerSize() << endl;
+
+    //     double coeff_pivot = A.coeff(pivot, pivot);
+    //     for (int k = pivot; k < A.outerSize(); ++k){
+    //         for (SparseMatrix<double>::InnerIterator it(A,k); it; ++it)
+    //         {
+    //             if(it.col() == pivot){
+
+    //             }
+
+    //             if (it.row() > pivot){
+    //                 cout << "valor: " << it.value() << endl;
+    //                 cout << "row: " << it.row() << endl;
+    //                 cout << "col: " << it.col() << endl;
+    //                 cout << "  " << endl;
+    //                 it.valueRef(it.value() - ...);
+    //             }
+                
+    //         }
+    //     }
+    // }
+
     for (int pivot = 0; pivot < n - 1; pivot++)
     {
-        cout << "PIVOT: " << pivot << endl;
+        //cout << "PIVOT: " << pivot << endl;
         double coeff_pivot = A.coeff(pivot, pivot);
+        
         for (int fila = pivot + 1; fila < n; fila++)
         {
             // valor del pivot: (valor a "anular") / a_(pivot)
